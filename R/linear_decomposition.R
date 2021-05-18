@@ -94,9 +94,12 @@ get_terms <- function(dep_var, all_x, data, wgt = rep(1, nrow(data))){
   indep_vars <- paste(all_x, collapse='+')
   form <- as.formula(paste(dep_var, '~', indep_vars))
   lin_model <- lm(formula = form, data = data, weights = wgt)
-  #note that here we already get centerd terms, so no normalization is needed. 
+  #here we normalize the terms 
   #(this is important cause later we calculate cov and its convenient that all variables are zero mean)
-  terms <- predict(lin_model, type = "term")
+  coeffs <- lin_model$coefficients[-1] #remove intercept
+  X <- data[,all_x, drop = FALSE]
+  terms <- t(coeffs * t(X))
+  terms <- apply(terms, 2, function(x){x - wtd.mean(x, wgt)})
   epsilon <- lin_model$residuals
   return(list(terms = terms, epsilon = epsilon))
 }
@@ -174,7 +177,7 @@ linear_skew_decomp <- function(X, wgt = rep(1, nrow(X))){
   cov21 <- as.data.frame(cov21)
   #set names
   cov21_names <- apply(pair_comb, 2,
-                       function(pair){paste0("3cov(", X_names[pair[1]], 
+                       function(pair){paste0("3COV(", X_names[pair[1]], 
                                              "^2,", X_names[pair[2]], ")")})
   #3 first moments multiplication
   if (p > 2){

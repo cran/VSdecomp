@@ -4,7 +4,14 @@
 \alias{plot.vs_decomp}
 \title{Plot Method for 'vs_decomp' Objects}
 \usage{
-\method{plot}{vs_decomp}(x, plot.comp = NULL, fill.colors = NULL, abs.terms = FALSE, ...)
+\method{plot}{vs_decomp}(
+  x,
+  plot.comp = NULL,
+  comp.labels = NULL,
+  fill.colors = NULL,
+  trunc.negative = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{a 'vs_decomp' object.}
@@ -12,12 +19,22 @@
 \item{plot.comp}{a vector of up to 3 components to plot. can be either character
 with component names or numeric with component indices. other
 components not specified by plot.comp are summed to one additional
-component. default is to plot the first 3 components.}
+component. default is to plot the first 3 components. another option
+is to additionally specify "all other terms" in order to control for the position
+of each component. (relevant only for the linear decomposition).}
+
+\item{comp.labels}{a vector of the same length as \code{plot.comp},
+which provides the labels to be shown in the graph. default is
+to use the original component names. (relevant only for
+the linear decomposition).}
 
 \item{fill.colors}{colors to fill the areas. see \code{\link[ggplot2]{scale_fill_manual}}
 for more details.}
 
-\item{abs.terms}{whether to plot absolute terms. default is TRUE.}
+\item{trunc.negative}{whether to truncate negative values with 0. default is TRUE.
+this flag is necessary because \code{\link[ggplot2]{geom_area}},
+on which the function is based, does not work well with a combination of positive
+and negative values.}
 
 \item{...}{further arguments passed to or from other methods.}
 }
